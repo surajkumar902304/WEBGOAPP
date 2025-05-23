@@ -2,9 +2,7 @@
 
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\BrandController;
-use App\Http\Controllers\Api\CartitemController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CompanyAddressController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,23 +45,11 @@ Route::middleware(['auth.api'])->group(function () {
 
     // Sliders Banner
     Route::get('/round-banner', [BannerController::class, 'roundBanner']);
-    Route::get('/big-banner', [BannerController::class, 'largeBanner']);
-    Route::get('/small-banner', [BannerController::class, 'smallBanner']);
-    Route::get('/deals-banner', [BannerController::class, 'dealBanner']);
-    Route::get('/fruit-banner', [BannerController::class, 'fruitBanner']);
-    Route::get('/browse-banner', [BannerController::class, 'browseBanner']);
 
     // Wishlist
     Route::get  ('/wishlist',      [WishlistController::class, 'index']);
     Route::post ('/wishlist/add',[WishlistController::class, 'store']);
 
-    // Cart Item
-    Route::get('/cart-item', [CartitemController::class, 'index']);
-    Route::post('/cart-item/update', [CartitemController::class, 'store']);
-
-    // Company Address
-    Route::get('/company-address', [CompanyAddressController::class, 'index']);
-    Route::post('/company-address/update', [CompanyAddressController::class, 'store']);
 
 });
 

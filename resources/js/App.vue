@@ -36,6 +36,12 @@
             <v-list-item-title>Products</v-list-item-title>
           </router-link>
 
+          <!-- Inventory -->
+          <router-link tag="v-list-item" to="#">
+            <v-list-item-icon><v-icon>mdi-warehouse</v-icon></v-list-item-icon>
+            <v-list-item-title>Inventory</v-list-item-title>
+          </router-link>
+
           <!-- Customers -->
           <router-link tag="v-list-item" to="/admin/customers" active-class="active-link">
             <v-list-item-icon><v-icon>mdi-account-group-outline</v-icon></v-list-item-icon>
@@ -85,7 +91,7 @@
               <v-list-item-title>Theme Setting</v-list-item-title>
             </template>
 
-            <router-link tag="v-list-item" to="/admin/round-sliders">
+            <router-link tag="v-list-item" to="#">
               <v-list-item-icon><v-icon>mdi-circle-slice-8</v-icon></v-list-item-icon>
               <v-list-item-title>Round Banners</v-list-item-title>
             </router-link>
@@ -105,11 +111,6 @@
               <v-list-item-title>Deals Sliders</v-list-item-title>
             </router-link>
 
-            <!-- <router-link tag="v-list-item" to="#">
-              <v-list-item-icon><v-icon>mdi-new-box</v-icon></v-list-item-icon>
-              <v-list-item-title>New Products Sliders</v-list-item-title>
-            </router-link> -->
-
             <router-link tag="v-list-item" to="#">
               <v-list-item-icon><v-icon>mdi-shape</v-icon></v-list-item-icon>
               <v-list-item-title>Fruit Sliders</v-list-item-title>
@@ -119,11 +120,6 @@
               <v-list-item-icon><v-icon>mdi-star-check-outline</v-icon></v-list-item-icon>
               <v-list-item-title>Browse Sliders</v-list-item-title>
             </router-link>
-
-            <!-- <router-link tag="v-list-item" to="#">
-              <v-list-item-icon><v-icon>mdi-star-check-outline</v-icon></v-list-item-icon>
-              <v-list-item-title>Top Sallers</v-list-item-title>
-            </router-link> -->
 
           </v-list-group>
 
@@ -149,7 +145,6 @@
 
           </v-list-group>
 
-          <!-- Logout (still handled by Laravel) -->
           <v-list-item :href="'/admin/logout'" active-class="active-link">
             <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
             <v-list-item-title>Log Out</v-list-item-title>
@@ -191,30 +186,6 @@ export default {
           || this.$route.path.startsWith('#')
     }
   }
-  // computed: {
-  //   isProductGroupOpen() {
-  //     return this.$route.path.startsWith('/admin/main-category')
-  //         || this.$route.path.startsWith('/admin/category')
-  //         || this.$route.path.startsWith('/admin/sub-category')
-  //         || this.$route.path.startsWith('/admin/product-offers')
-  //         || this.$route.path.startsWith('/admin/product-option')
-  //         || this.$route.path.startsWith('/admin/brand');
-  //   },
-  //   isThemeGroupOpen() {
-  //     return this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //   },
-  //   isShopGroupOpen() {
-  //     return this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //         || this.$route.path.startsWith('#')
-  //   }
-  // }
-
 
 }
 </script>

@@ -121,5 +121,4 @@ export default {
   background-color: #27ae60;
 }
 
-/* Optional: Add lines between dots using pseudo-elements */
 </style>

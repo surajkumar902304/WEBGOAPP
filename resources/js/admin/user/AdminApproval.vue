@@ -158,7 +158,6 @@ export default {
 .v-input {
   font-size: 12px !important;
 }
-/* Global toast customization */
 .Vue-Toastification__toast {
   border-radius: 5px;
   padding: 10px 17px;
