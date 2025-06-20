@@ -1,6 +1,8 @@
 <template>
     <div>
-        <v-row><h2 class="text-h6">Add New Product</h2></v-row>
+        <v-row>
+            <h2 class="text-h6">Add New Product</h2>
+        </v-row>
         <v-form @submit.prevent="saveProductData" v-model="fvalid">
             <div class="row mt-0">
                 <div class="col-md-6">
@@ -17,7 +19,7 @@
                         <template v-slot:loader>
                             <v-progress-circular indeterminate size="20" color="green"></v-progress-circular>
                         </template>
-                    <span v-if="!saveLoading">Save</span>
+                        <span v-if="!saveLoading">Save</span>
                     </v-btn>
                 </div>
             </div>
@@ -25,13 +27,11 @@
             <v-dialog v-model="unsavedDialog" max-width="400">
                 <v-card>
                     <v-card-title class="text-h6">Unsaved Changes</v-card-title>
-                    <v-card-text>
-                    You have unsaved product data. Do you want to save it before leaving?
-                    </v-card-text>
+                    <v-card-text>You have unsaved product data. Do you want to save it before leaving?</v-card-text>
                     <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn text color="primary" @click="saveProductData">Save</v-btn>
-                    <v-btn text color="red" @click="exitWithoutSaving">Back Without Saving</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="primary" @click="saveProductData">Save</v-btn>
+                        <v-btn text color="red" @click="exitWithoutSaving">Back Without Saving</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -97,31 +97,16 @@
                         <v-card-text>
                             <v-row>
                                 <v-col cols="12" md="4">
-                                <label class="font-weight-medium mb-2 d-block">Shipping</label>
-                                <v-row dense>
-                                    <v-col cols="7">
-                                    <v-text-field
-                                        v-model.number="weight"
-                                        type="number"
-                                        dense
-                                        outlined
-                                        label="Weight"
-                                        :rules="weightRules"
-                                    ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="5">
-                                    <v-select
-                                        v-model="weightUnit"
-                                        :items="['kg', 'g']"
-                                        dense
-                                        outlined
-                                        label=""
-                                        hide-details
-                                    ></v-select>
-                                    </v-col>
-                                </v-row>
+                                    <label class="font-weight-medium mb-2 d-block">Shipping</label>
+                                    <v-row dense>
+                                        <v-col cols="7">
+                                            <v-text-field v-model.number="weight" type="number" dense outlined label="Weight" :rules="weightRules"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="5">
+                                            <v-select v-model="weightUnit" :items="['kg', 'g']" dense outlined label="" hide-details></v-select>
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
-
                             </v-row>
                         </v-card-text>
                     </v-card>
@@ -134,8 +119,8 @@
                                         <v-row class="align-center">
                                             <v-col cols="8" class="d-flex flex-wrap align-center gap-2">
                                                 <span class="font-weight-bold mr-2">{{ key }}:</span>
-                                                <v-chip v-for="(opvalue, index) in variant" :key="index" outlined close 
-                                                    @click:close="removeValue(key, opvalue)" close-icon="mdi-close-circle" color="primary">
+                                                <v-chip v-for="(opvalue, index) in variant" :key="index" outlined close @click:close="removeValue(key, opvalue)" 
+                                                    close-icon="mdi-close-circle" color="primary">
                                                     <span class="text-capitalize">{{ opvalue }}</span>
                                                 </v-chip>
                                             </v-col>
@@ -162,7 +147,7 @@
                             <v-row v-if="showVariantForm" class="align-center">
                                 <v-col cols="12" md="4">
                                     <v-select v-model="selectedOption" :items="filteredOptions" item-text="moption_name" item-value="moption_name" label="Option Name" 
-                                    dense outlined hide-details></v-select>
+                                        dense outlined hide-details></v-select>
                                 </v-col>
                                 <v-col cols="12" md="5">
                                     <v-text-field v-model="optionValues" label="Option Values (comma-separated)" dense outlined hide-details></v-text-field>
@@ -664,7 +649,7 @@ export default {
 
             pdata.append("ptype", this.pro.ptype ?? "");
             pdata.append("pbrand", this.pro.brand ?? "");
-            pdata.append("ptags", JSON.stringify(this.pro.tags ?? [])); // Convert tags to JSON
+            pdata.append("ptags", JSON.stringify(this.pro.tags ?? []));
             pdata.append("pstatus", this.pro.pstatus ?? "Draft");
             pdata.append("pchannel", JSON.stringify(this.pro.selectedSalesChannel ?? []));
             pdata.append("ptitle", this.productname ?? "");
@@ -677,7 +662,7 @@ export default {
             pdata.append("pprice", this.price ?? "");
             pdata.append("pcompareprice", this.compareprice ?? "");
             pdata.append("pcostprice", this.costprice ?? "");
-            pdata.append("taxable", this.taxable ? "1" : "0"); // Convert to string for backend
+            pdata.append("taxable", this.taxable ? "1" : "0");
             pdata.append("pbarcode", this.barcode ?? "");
             pdata.append("psku", this.sku ?? "");
             pdata.append("pstock", this.stockQuantity ?? "");
@@ -690,8 +675,8 @@ export default {
                     pdata.append(`variants[${index}][price]`, variant.price ?? "");
                     pdata.append(`variants[${index}][stock]`, variant.stock ?? "");
                     pdata.append(`variants[${index}][barcode]`, variant.barcode ?? "");
-                    pdata.append(`variants[${index}][optname]`, JSON.stringify(variant.optname ?? [])); // Ensure JSON
-                    pdata.append(`variants[${index}][optvalue]`, JSON.stringify(variant.optvalue ?? [])); // Ensure JSON
+                    pdata.append(`variants[${index}][optname]`, JSON.stringify(variant.optname ?? [])); 
+                    pdata.append(`variants[${index}][optvalue]`, JSON.stringify(variant.optvalue ?? [])); 
                     
                     if (variant.variantImage instanceof File) {
                         pdata.append(`variants[${index}][variantImage]`, variant.variantImage);

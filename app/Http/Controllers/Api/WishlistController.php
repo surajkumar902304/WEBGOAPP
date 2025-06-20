@@ -11,10 +11,6 @@ use App\Models\Mproduct;
 
 class WishlistController extends Controller
 {
-    /**
-     * GET /api/wishlist?user_id={id}
-     * List all wishlist entries for a user.
-     */
     public function index(Request $request)
     {
         $data = $request->validate([
@@ -44,12 +40,6 @@ class WishlistController extends Controller
         ],200);
     }
 
-    /**
-     * POST /api/wishlist
-     * Toggle a wishlist entry on/off for a user & product.
-     *
-     * Body: { user_id: ..., mproduct_id: ... }
-     */
     public function store(Request $request)
     {
         $data = $request->validate([

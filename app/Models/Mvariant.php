@@ -25,6 +25,10 @@ class Mvariant extends Model
         'isvalidatedetails'
     ];
 
+    public function product()
+    {
+        return $this->belongsTo(Mproduct::class,'mproduct_id','mproduct_id');
+    }
     public function mvariantDetail()
     {
         return $this->hasOne(Mvariant_detail::class, 'mvariant_id', 'mvariant_id')
@@ -32,14 +36,14 @@ class Mvariant extends Model
     }
     public function mstock()
     {
-        return $this->hasMany(Mstock::class, 'mvariant_id', 'mvariant_id')
+        return $this->hasOne(Mstock::class, 'mvariant_id', 'mvariant_id')
         ->select(['mstock_id', 'quantity', 'mlocation_id', 'mvariant_id']);
     }
 
     public function productoffer()
-{
-    return $this->hasOne(Product_Offer::class, 'mvariant_id', 'mvariant_id');
-}
+    {
+        return $this->hasOne(Product_Offer::class, 'mvariant_id', 'mvariant_id');
+    }
 
 
 

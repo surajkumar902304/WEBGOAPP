@@ -3,32 +3,34 @@
         <v-row>
             <h2 class="text-h6 mb-1">Products</h2>
         </v-row>
-        <v-row class="mt-0 pt-0">
-            <v-col cols="12" md="5">
-                <v-text-field v-model="msearch" clearable dense outlined prepend-inner-icon="mdi-magnify mb-2" placeholder="Search all products" hide-details></v-text-field>
-            </v-col>
-            <v-col cols="12" md="2">
-                <v-autocomplete  v-model="selectedType" :items="mptypes" item-text="mproduct_type_name" item-value="mproduct_type_id" 
-                    dense hide-details outlined label="Type" clearable>
-                </v-autocomplete>
-            </v-col>
-            <v-col cols="12" md="2">
-                <v-autocomplete v-model="selectedBrand" :items="mbrands" item-text="mbrand_name" item-value="mbrand_id" dense hide-details outlined 
-                    label="Brand" clearable>
-                </v-autocomplete>
-            </v-col>
-            <v-col cols="12" md="2">
-                <v-autocomplete v-model="selectedTags" :items="mtags" item-text="mtag_name" item-value="mtag_id" dense hide-details outlined label="Tags" 
-                    clearable multiple small-chips>
-                </v-autocomplete>
-            </v-col>
-            <v-col cols="12" md="1">
-                <v-btn color="secondary" small :to="'/admin/product/addview'" router class="text-none" style="height: 32px; padding: 8px; margin-left: -7px;">
-                    Add Product
-                </v-btn>
-            </v-col>
-        </v-row>
-        
+        <v-container fluid>
+            <v-row class="mt-0 pt-0 gap-2 flex-nowrap w-100 justify-content-between search-products">
+                <v-col cols="12" md="5" class="p-0">
+                    <v-text-field v-model="msearch" clearable dense outlined prepend-inner-icon="mdi-magnify mb-2" placeholder="Search all products" hide-details></v-text-field>
+                </v-col>
+                <v-col cols="12" md="2" class="p-0">
+                    <v-autocomplete  v-model="selectedType" :items="mptypes" item-text="mproduct_type_name" item-value="mproduct_type_id" 
+                        dense hide-details outlined label="Type" clearable>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="2" class="p-0">
+                    <v-autocomplete v-model="selectedBrand" :items="mbrands" item-text="mbrand_name" item-value="mbrand_id" dense hide-details outlined 
+                        label="Brand" clearable>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="2" class="p-0">
+                    <v-autocomplete v-model="selectedTags" :items="mtags" item-text="mtag_name" item-value="mtag_id" dense hide-details outlined label="Tags" 
+                        clearable multiple small-chips>
+                    </v-autocomplete>
+                </v-col>
+                <v-col cols="12" md="1" class="p-0">
+                    <v-btn color="secondary" small :to="'/admin/product/addview'" router class="text-none fw-bold" style="height: 32px; color: #1976d2; 
+                        background-color: white !important; border: 1px solid #1976d2 !important;">
+                        Add Product
+                    </v-btn>
+                </v-col>
+            </v-row>
+        </v-container>
         <v-row  class="mt-0 pt-0">
             <v-col cols="12">
                 <v-card outlined>
@@ -40,29 +42,23 @@
                             <v-tab class="text-none" style="font-size: 12px;">Draft</v-tab>
                             </v-tabs>
                         </v-col>
-
                         <v-col class="d-flex justify-end" cols="auto" v-if="selected.length > 0">
                             <v-menu offset-y>
                                 <template v-slot:activator="{ on, attrs }">
-                                <v-icon
-                                    color="primary"
-                                    v-bind="attrs"
-                                    v-on="on"
-                                    style="cursor: pointer; margin-right: 5px;"
-                                >
-                                    mdi-dots-vertical
-                                </v-icon>
+                                    <span class="mr-2 font-weight-medium text-caption">{{ selected.length }} selected</span>
+                                    <v-icon color="primary" v-bind="attrs" v-on="on" style="cursor: pointer; margin-right: 5px;">
+                                        mdi-dots-vertical
+                                    </v-icon>
                                 </template>
-
                                 <v-list dense>
                                     <v-list-item @click="openConfirmDialog('delete')">
                                         <v-list-item-title>Delete</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item @click="openAddTagDialog">
-                                        <v-list-item-title>Add Tag</v-list-item-title>
+                                        <v-list-item-title>Add Tags</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item @click="openremoveTagDialog">
-                                        <v-list-item-title>Remove Tag</v-list-item-title>
+                                        <v-list-item-title>Remove Tags</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item @click="openConfirmDialog('markActive')">
                                         <v-list-item-title>Mark as Active</v-list-item-title>
@@ -75,11 +71,11 @@
                         </v-col>
                     </v-row>
 
-                    <v-data-table  dense v-model="selected" :show-select="true" item-key="mproduct_id" :headers="mprosHeaders"  :items="filteredMpros"  :search="msearch" :footer-props="{
-                        'items-per-page-options': [10, 25, 50, 100], 'items-per-page-text': 'Rows per page:'}">
+                    <v-data-table dense v-model="selected" :show-select="true" item-key="mproduct_id" :headers="mprosHeaders"  :items="filteredMpros"  :search="msearch" 
+                        :footer-props="{'items-per-page-options': [10, 25, 50, 100], 'items-per-page-text': 'Rows per page:'}">
                         <template v-slot:item.mproduct_image="{ item }">
-                            <v-img :src="item.mproduct_image ? cdn + item.mproduct_image : ''" cover width="50" height="50" class="ma-1" 
-                                style="border: 1px solid #e0e0e0; border-radius: 10px;">  
+                            <v-img :src="item.mproduct_image ? cdn + item.mproduct_image : ''" cover width="50" height="50" class="ma-1" style="border: 1px solid #e0e0e0; 
+                                border-radius: 10px;">  
                                 <template #placeholder>
                                     <div class="d-flex align-center justify-center fill-height">
                                         <v-icon color="grey">mdi-image</v-icon>
@@ -88,21 +84,19 @@
                             </v-img>
                         </template>
                         <template v-slot:item.mproduct_title="{ item }">
-                          <router-link
-                                :to="{ name: 'edit-product', params: { mproid: item.mproduct_id } }"
-                                class="link-dark"
-                            >
+                            <router-link :to="{ name: 'edit-product', params: { mproid: item.mproduct_id } }" class="link-dark">
                                 {{ item.mproduct_title }}
                             </router-link>
                         </template>
+                        <template #header.status>
+                            <div class="text-center">Status</div>
+                        </template>
                         <template v-slot:item.status="{ item }">
-                            <v-chip :color="item.status === 'Active' ? 'green' : 'blue'" class="ma-1" outlined pill small>
-                                {{
-                                item.status === 'Active'
-                                    ? 'Active'
-                                    : 'Draft'
-                                }}
-                            </v-chip>
+                            <div class="text-center">
+                                <v-chip :color="item.status === 'Active' ? 'green' : 'blue'" class="ma-1" outlined pill small>
+                                    {{ item.status === 'Active' ? 'Active' : 'Draft' }}
+                                </v-chip>
+                            </div>
                         </template>
                         <template v-slot:item.minventory="{ item }">
                             <span>
@@ -110,10 +104,32 @@
                                 <span v-if="item.hasOptions"> for {{ item.vCount }} variant{{ item.vCount > 1 ? 's' : '' }}</span>
                             </span>
                         </template>
+                        <template #header.type_name>
+                            <div class="text-center">Type</div>
+                        </template>
+                        <template v-slot:item.type_name="{ item}">
+                            <div class="text-center">
+                                {{ item.type_name }}
+                            </div>
+                        </template>
+                        <template #header.brand_name>
+                            <div class="text-center">Brand</div>
+                        </template>
+                        <template v-slot:item.brand_name="{ item}">
+                            <div class="text-center">
+                                {{ item.brand_name }}
+                            </div>
+                        </template>
+                        <template #header.actions>
+                            <div class="text-center">Actions</div>
+                        </template>
                         <template #item.actions="{ item }">
-                            <v-icon small color="red" style="margin-left: 14px;" @click="confirmDelete(item)">
-                                mdi-delete
-                            </v-icon>
+                            <div class="text-center">
+                                <v-chip color="red" class="white--text" outlined pill small @click="confirmDelete(item)" style="cursor: pointer;">
+                                    <v-icon small left>mdi-delete</v-icon>
+                                    Delete
+                                </v-chip>
+                            </div>
                         </template>
                     </v-data-table>
                 </v-card>
@@ -123,16 +139,12 @@
         <!-- Delete dialog -->
         <v-dialog v-model="deleteDialog" max-width="400">
             <v-card>
-                <v-card-title class="text-h6">
-                Confirm Delete
-                </v-card-title>
-                <v-card-text>
-                Are you sure you want to delete this Product?
-                </v-card-text>
+                <v-card-title class="text-h6">Confirm Delete</v-card-title>
+                <v-card-text>Are you sure you want to delete this Product?</v-card-text>
                 <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text color="grey" @click="deleteDialog = false">Cancel</v-btn>
-                <v-btn text color="red" :loading="deleteLoading" :disabled="deleteLoading" @click="performDelete">Delete</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="grey" @click="deleteDialog = false">Cancel</v-btn>
+                    <v-btn text color="red" :loading="deleteLoading" :disabled="deleteLoading" @click="performDelete">Delete</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -142,13 +154,13 @@
             <v-card>
                 <v-card-title class="text-h6">Confirm {{ actionLabel }}</v-card-title>
                 <v-card-text>
-                Are you sure you want to <strong>{{ actionLabel.toLowerCase() }}</strong> 
-                <strong>{{ selected.length }}</strong> selected products?
+                    Are you sure you want to <strong>{{ actionLabel.toLowerCase() }}</strong> 
+                    <strong>{{ selected.length }}</strong> selected products?
                 </v-card-text>
                 <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text color="grey" @click="confirmDialog = false">Cancel</v-btn>
-                <v-btn text color="red" @click="executeBulkAction">Yes</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="grey" @click="confirmDialog = false">Cancel</v-btn>
+                    <v-btn text color="red" @click="executeBulkAction">Yes</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -158,30 +170,15 @@
             <v-card class="d-flex flex-column justify-space-between" style="min-height: 340px;">
                 <v-card-title class="text-h6">Add Tags</v-card-title>
                 <v-card-text>
-                    <v-autocomplete
-                        ref="tagsAutocomplete"
-                        v-model="tagsToAdd"
-                        :items="mtags"
-                        item-text="mtag_name"
-                        item-value="mtag_id"
-                        label="Select Tags"
-                        multiple
-                        small-chips
-                        deletable-chips
-                        clearable
-                        outlined
-                        dense
-                        :search-input.sync="typedTag"
-                        :filter="tagFilter"
-                        style="height: 38px;"
-                        >
+                    <v-autocomplete ref="tagsAutocomplete" v-model="tagsToAdd" :items="mtags" item-text="mtag_name" item-value="mtag_id" label="Select Tags" multiple 
+                        small-chips deletable-chips clearable outlined dense :search-input.sync="typedTag" :filter="tagFilter" style="height: 38px;">
                         <template v-slot:no-data>
                             <v-list-item>
-                            <v-list-item-content>
-                                <v-btn text small @click="addNewTag" :disabled="!typedTag?.trim()">
-                                Add “{{ typedTag }}”
-                                </v-btn>
-                            </v-list-item-content>
+                                <v-list-item-content>
+                                    <v-btn text small @click="addNewTag" :disabled="!typedTag?.trim()">
+                                        Add “{{ typedTag }}”
+                                    </v-btn>
+                                </v-list-item-content>
                             </v-list-item>
                         </template>
                     </v-autocomplete>
@@ -200,18 +197,8 @@
             <v-card class="d-flex flex-column justify-space-between" style="min-height: 340px;">
                 <v-card-title class="text-h6">Remove Tags</v-card-title>
                 <v-card-text>
-                    <v-autocomplete
-                        v-model="tagsToRemove"
-                        :items="mtags"
-                        item-text="mtag_name"
-                        item-value="mtag_id"
-                        label="Select Tags"
-                        multiple
-                        small-chips deletable-chips
-                        clearable
-                        outlined
-                        dense
-                        style="height: 38px;">
+                    <v-autocomplete v-model="tagsToRemove" :items="mtags" item-text="mtag_name" item-value="mtag_id" label="Select Tags" multiple small-chips 
+                        deletable-chips clearable outlined dense style="height: 38px;">
                     </v-autocomplete>
                 </v-card-text>
                 <v-spacer></v-spacer>
@@ -222,8 +209,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
-
     </div>
 </template>
   
@@ -247,10 +232,10 @@ export default {
             mprosHeaders: [
                 { text: 'Image', value: 'mproduct_image', width: '100px', sortable: false },
                 { text: 'Product', value: 'mproduct_title', width: '30%'},
-                { text: 'Status', value: 'status', width: '150px' },
+                { text: 'Status', value: 'status', width: '150px', sortable: false },
                 { text: 'Inventory', value: 'minventory', width: '150px', sortable: false },
-                { text: 'Type', value: 'type_name', width: '150px' },
-                { text: 'Brand', value: 'brand_name', width: '150px' },
+                { text: 'Type', value: 'type_name', width: '150px', sortable: false },
+                { text: 'Brand', value: 'brand_name', width: '150px', sortable: false },
                 { text: 'Actions', value: 'actions', width: '150px', sortable: false }
             ],
             deleteDialog: false,
@@ -341,7 +326,7 @@ export default {
                         const opts = JSON.parse(v.options);
                         return Array.isArray(opts) && opts.length > 0;
                     } catch (e) {
-                        return false; // in case options is not valid JSON
+                        return false;
                     }
                     });
 
@@ -426,13 +411,12 @@ export default {
 
                 const newId = response.data.mtag_id;
 
-                // ✅ ADD THIS RIGHT AFTER TAG CREATED
                 this.mtags.push({
                 mtag_id: newId,
                 mtag_name: newName,
                 });
 
-                this.tagsToAdd.push(newId); // ✅ select the new tag
+                this.tagsToAdd.push(newId);
                 this.fetchTags();
                 this.typedTag = "";
                 if (this.$refs.tagsAutocomplete) {
@@ -457,7 +441,6 @@ export default {
                     })
             });
         },
-
         openConfirmDialog(action) {
             this.actionToConfirm = action;
             this.actionLabel = {
@@ -467,7 +450,6 @@ export default {
             }[action] || '';
             this.confirmDialog = true;
         },
-
         async openAddTagDialog() {
             this.actionToConfirm = 'addTag';
             this.addTagDialog = true;
@@ -484,7 +466,6 @@ export default {
             const res = await axios.get('/admin/mtags/vlist');
             this.mtags = res.data?.mtags || [];
         },
-
         async executeBulkAction() {
             const ids = this.selected.map(p => p.mproduct_id);
             let url = '';
@@ -520,7 +501,6 @@ export default {
             this.selected = [];
             }
         },
-
         async submitAddTags() {
             if (!this.tagsToAdd.length) return;
 
@@ -558,48 +538,57 @@ export default {
             } catch (err) {
                 this.$toast?.error('Failed to remove tags', { timeout: 500 });
             }
-        },
+        }
     }
 }
 </script>
 <style>
 .v-input {
-  font-size: 12px !important;
+    font-size: 12px !important;
 }
-
- .v-input__control {
+.v-input__control {
     display: flex;
     flex-wrap: nowrap !important;
-  min-height: 32px !important;
+    min-height: 32px !important;
  
 }
-/*.v-input__control{
-   min-height: 32px !important;
- } */
-  .v-select__selections{
+.v-select__selections{
     display: flex;
     flex-wrap: nowrap !important;
     min-height: 32px !important;
     height: 32px !important;
-  }
+}
 .v-input input {
-  font-size: 12px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  margin: 0 !important;
-  align-self: center !important;
+    font-size: 12px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    margin: 0 !important;
+    align-self: center !important;
 }
 
 .v-label {
-  display: flex !important;
-  align-items: center !important;  /* Align label vertically */
-  font-size: 12px !important;
-  height: 100% !important;
-  padding-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    font-size: 12px !important;
+    height: 100% !important;
+    padding-bottom: 20px !important;
 }
 .v-input__append-inner{
     margin-top: 4px !important;
+}
+.search-products > div:first-child {
+    width: calc(50% - 130px)!important;
+    flex: 0 0 calc(50% - 130px)!important;
+    max-width: calc(50% - 130px)!important;
+}
+.search-products > div:last-child {
+    width: 130px!important;
+    flex: 0 0 130px!important;
+    max-width: 130px!important;
+}
+.search-products > div:last-child a {
+    width: calc(100% - 10px)
 }
 </style>

@@ -1,6 +1,8 @@
 <template>
   <div>
-    <v-row><h2 class="text-h6">Add New Sub-Category</h2></v-row>
+    <v-row>
+      <h2 class="text-h6">Add New Sub-Category</h2>
+    </v-row>
     <v-row class="mt-0">
       <v-col cols="6" class="d-flex">
         <v-btn :loading="backLoading" :disabled="backLoading" small style="height: 32px;" @click="navigateBack">
@@ -24,21 +26,17 @@
     </v-row>
 
     <v-row>
-      <!-- Category and Sub-Category -->
       <v-col cols="12" md="9">
         <v-card outlined>
           <v-card-text>
             <v-card-subtitle class="black--text">Category *</v-card-subtitle>
             <v-select dense outlined v-model="form.mcat_id" :items="mcats" item-text="mcat_name" item-value="mcat_id" 
               label="Select Category" :rules="[v=>!!v||'Required']" @change="resetSubcat"/>
-
             <v-card-subtitle class="black--text">Sub-Category *</v-card-subtitle>
-            <v-text-field dense outlined v-model="form.subcatname" label="Sub-Category Name" 
-              :rules="msubcatnameRule" @blur="checkDuplicate"/>
+            <v-text-field dense outlined v-model="form.subcatname" label="Sub-Category Name" :rules="msubcatnameRule" @blur="checkDuplicate"/>
           </v-card-text>
         </v-card>
 
-        <!-- Collection Type -->
         <v-card outlined class="my-3">
           <v-card-subtitle>Collection Type</v-card-subtitle>
           <v-card-text>
@@ -49,14 +47,12 @@
           </v-card-text>
         </v-card>
 
-        <!-- Products Browse -->
         <v-card v-if="mcattype==='manual'" outlined class="my-3">
           <v-card-subtitle>Products</v-card-subtitle>
           <v-card-text>
             <v-row>
               <v-col cols="6">
-                <v-text-field dense outlined prepend-inner-icon="mdi-magnify mb-2" v-model="productSearch" 
-                  placeholder="Search Product"/>
+                <v-text-field dense outlined prepend-inner-icon="mdi-magnify mb-2" v-model="productSearch" placeholder="Search Product"/>
               </v-col>
               <v-col cols="2">
                 <v-btn outlined @click="productDialog=true" style="height: 32px !important;">Browse</v-btn>
@@ -79,9 +75,7 @@
                     <v-list-item-title>{{ p.mproduct_title }}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-action>
-                    <v-btn icon @click="removeProduct(p.mproduct_id)">
-                      <v-icon>mdi-close</v-icon>
-                    </v-btn>
+                    <v-btn icon @click="removeProduct(p.mproduct_id)"><v-icon>mdi-close</v-icon></v-btn>
                   </v-list-item-action>
                 </v-list-item>
               </v-list>
@@ -89,7 +83,6 @@
           </v-card-text>
         </v-card>
 
-        <!-- Conditions All / Any -->
         <v-card v-else outlined class="my-3">
           <v-card-subtitle>Conditions</v-card-subtitle>
           <v-card-text>
@@ -103,104 +96,33 @@
 
             <div v-for="(row, idx) in conditions" :key="idx" class="row mb-2">
               <div class="col-md-4">
-                <v-autocomplete
-                  dense
-                  outlined
-                  v-model="row.tag"
-                  :items="ruleColumns"
-                  item-text="field_name"
-                  item-value="field_id"
-                  label="Field"
-                  @change="updateRelations(idx)"
-                />
+                <v-autocomplete dense outlined v-model="row.tag" :items="ruleColumns" item-text="field_name" item-value="field_id" label="Field" @change="updateRelations(idx)"/>
               </div>
 
               <div class="col-md-4">
-                <v-autocomplete
-                  dense
-                  outlined
-                  v-model="row.condition"
-                  :items="row.relations"
-                  item-text="query_name"
-                  item-value="query_id"
-                  label="Condition"
-                />
+                <v-autocomplete dense outlined v-model="row.condition" :items="row.relations" item-text="query_name" item-value="query_id" label="Condition"/>
               </div>
 
               <div class="col-md-4 d-flex">
                 <div v-if="['Inventory stock'].includes(getFieldNameById(row.tag))">
-                  <v-text-field
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    type="number"
-                    class="flex-grow-1"
-                    :rules="[(v) => v === '' || /^\d+$/.test(v) || 'Must be a whole number']"
-                  />
+                  <v-text-field dense outlined v-model="row.value" label="Value" type="number" class="flex-grow-1" :rules="[(v) => v === '' || /^\d+$/.test(v) || 'Must be a whole number']"/>
                 </div>
 
                 <div v-else-if="['Title'].includes(getFieldNameById(row.tag))">
-                  <v-text-field
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    type="text"
-                    class="flex-grow-1"
-                  />
+                  <v-text-field dense outlined v-model="row.value" label="Value" type="text" class="flex-grow-1"/>
                 </div>
 
                 <div v-else-if="['Price'].includes(getFieldNameById(row.tag))">
-                  <v-text-field
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    type="number"
-                    class="flex-grow-1"
-                    :rules="[(v) => v === '' || !isNaN(v) || 'Must be a number']"
-                  />
+                  <v-text-field dense outlined v-model="row.value" label="Value" type="number" class="flex-grow-1" :rules="[(v) => v === '' || !isNaN(v) || 'Must be a number']"/>
                 </div>
                 <div v-else-if="['Type'].includes(getFieldNameById(row.tag))">
-                  <v-combobox
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    class="flex-grow-1"
-                    :items="getDynamicSuggestions(row.tag)"
-                    item-text="mproduct_type_name"
-                    item-value="mproduct_type_id"
-                    :return-object="true"
-                  />
+                  <v-combobox dense outlined v-model="row.value" label="Value" class="flex-grow-1" :items="getDynamicSuggestions(row.tag)" item-text="mproduct_type_name" item-value="mproduct_type_id" :return-object="true"/>
                 </div>
                 <div v-else-if="['Brand'].includes(getFieldNameById(row.tag))">
-                  <v-combobox
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    class="flex-grow-1"
-                    :items="getDynamicSuggestions(row.tag)"
-                    item-text="mbrand_name"
-                    item-value="mbrand_id"
-                    :return-object="true"
-                  />
+                  <v-combobox dense outlined v-model="row.value" label="Value" class="flex-grow-1" :items="getDynamicSuggestions(row.tag)" item-text="mbrand_name" item-value="mbrand_id" :return-object="true"/>
                 </div>
-                <!-- Default → combobox with dynamic items -->
                 <div v-else>
-                  <v-combobox
-                    dense
-                    outlined
-                    v-model="row.value"
-                    label="Value"
-                    class="flex-grow-1"
-                    :items="getDynamicSuggestions(row.tag)"
-                    item-text="mtag_name"
-                    item-value="mtag_id"
-                    :return-object="true"
-                  />
+                  <v-combobox dense outlined v-model="row.value" label="Value" class="flex-grow-1" :items="getDynamicSuggestions(row.tag)" item-text="mtag_name" item-value="mtag_id" :return-object="true"/>
                 </div>
 
                 <v-btn icon v-if="conditions.length > 1" @click="removeCondition(idx)">
@@ -209,15 +131,11 @@
               </div>
             </div>
 
-
-            <v-btn outlined small @click="addCondition">
-              <v-icon small>mdi-plus</v-icon> Add another condition
-            </v-btn>
+            <v-btn outlined small @click="addCondition"><v-icon small>mdi-plus</v-icon> Add another condition</v-btn>
           </v-card-text>
         </v-card>
       </v-col>
 
-      <!-- Publishing -->
       <v-col cols="12" md="3">
         <v-card outlined class="mb-3">
           <v-card-actions><span class="body-2 fw-semibold">Publishing</span></v-card-actions>
@@ -229,24 +147,19 @@
           </v-card-text>
         </v-card>
 
-        <!-- Image -->
         <v-card outlined>
           <v-card-actions><span class="body-2 fw-semibold">Image *</span></v-card-actions>
           <v-card-text>
             <div v-if="!imagePreview">
-              <v-file-input dense hide-input accept="image/*" prepend-icon="mdi-camera-outline" label="Upload image" 
-                @change="onImageSelect"/>
+              <v-file-input dense hide-input accept="image/*" prepend-icon="mdi-camera-outline" label="Upload image" @change="onImageSelect"/>
             </div>
             <div v-else class="d-flex align-center">
               <v-img :src="imagePreview" max-width="80" max-height="80" contain class="uploader-box"/>
-              <v-btn icon small class="ml-2" @click="clearImage">
-                <v-icon color="red">mdi-trash-can</v-icon>
-              </v-btn>
+              <v-btn icon small class="ml-2" @click="clearImage"><v-icon color="red">mdi-trash-can</v-icon></v-btn>
             </div>
           </v-card-text>
         </v-card>
 
-        <!-- Create offer -->
         <v-card outlined class="mt-3">
           <v-card-actions><span class="body-2 fw-semibold">Create Offer</span></v-card-actions>
           <v-text-field class="px-4 mt-6" v-model="form.offer_name" label="Timer" dense outlined/>
@@ -254,7 +167,6 @@
           <v-text-field class="px-4 mt-3" v-model="form.end_time" label="End Time" type="datetime-local" dense outlined :rules="endTimeRules"/>
         </v-card>
 
-        <!-- Sub-Category Tag -->
         <v-card outlined class="mt-3">
           <v-card-actions><span class="body-2 fw-semibold">Sub-Category Tag</span></v-card-actions>
           <v-card-text>
@@ -276,11 +188,8 @@
           <v-text-field dense outlined prepend-inner-icon="mdi-magnify mb-2" v-model="productSearch" placeholder="Search Product"/>
         </v-card-text>
 
-        <v-data-table v-model="productSelection" :items="allProducts" :headers="productHeaders" :search="productSearch" show-select 
-          item-key="mproduct_id" return-object :footer-props="{
-                        'items-per-page-options': [10, 25, 50, 100],
-                        'items-per-page-text': 'Rows per page:'
-                        }">
+        <v-data-table v-model="productSelection" :items="allProducts" :headers="productHeaders" :search="productSearch" show-select item-key="mproduct_id" 
+          return-object :footer-props="{'items-per-page-options': [10, 25, 50, 100],'items-per-page-text': 'Rows per page:'}">
           <template #item.mproduct_image="{ item }">
             <img :src="item.mproduct_image ? cdn+item.mproduct_image : '/images/no-image-available.png'" width="50"/>
           </template>
@@ -348,14 +257,11 @@ export default {
       backLoading: false,
       saveLoading: false,
       msubcatnameRule: [
-          v => !!v || 'Sub-Category is required',
-          v => (v && v.length >= 3) || 'Name must be at least 3 characters',
-          (v) =>
-              !this.msubcats.some(
-                  (msubcat) =>
-                  msubcat.msubcat_name.toLowerCase().trim() === v.toLowerCase().trim() &&
-                  msubcat.msubcat_id !== this.msubcat_id
-            ) || "Sub-Category already exists"
+        v => !!v || 'Sub-Category is required',
+        v => (v && v.length >= 3) || 'Name must be at least 3 characters',
+        (v) =>!this.msubcats.some(
+              (msubcat) =>msubcat.msubcat_name.toLowerCase().trim() === v.toLowerCase().trim() && msubcat.msubcat_id !== this.msubcat_id
+        ) || "Sub-Category already exists"
       ],
       existingOffers: [],
       startTimeRules: [
@@ -482,17 +388,22 @@ export default {
         this.allQueries.filter(q=>allowed.includes(q.query_id))
       this.conditions[idx].condition=''
     },
-    addCondition(){ this.conditions.push({ tag:'',condition:'',value:'',relations:[] }) },
-    removeCondition(idx){ this.conditions.splice(idx,1) },
+    addCondition(){ 
+      this.conditions.push({ tag:'',condition:'',value:'',relations:[] }) 
+    },
+    removeCondition(idx){ 
+      this.conditions.splice(idx,1) 
+    },
 
     onImageSelect(file){
       if(file){ this.form.image=file; this.imagePreview=URL.createObjectURL(file) }
       else this.clearImage()
     },
-    clearImage(){ this.form.image=null; this.imagePreview=null },
+    clearImage(){ 
+      this.form.image=null; this.imagePreview=null 
+    },
 
     async saveSubCategory () {
-
       this.saveLoading = true;
 
       const fd = new FormData()
@@ -506,7 +417,6 @@ export default {
         const trimmed = this.conditions.map(c => {
           let value = c.value;
 
-          // Extract only the ID if it's an object (used in tag, brand, type)
           if (value && typeof value === 'object') {
             value = value.mtag_id || value.mbrand_id || value.mproduct_type_id || value.id || '';
           }
@@ -534,11 +444,11 @@ export default {
       })
     },
     navigateBack() {
-          if (this.backLoading) return;
-          this.backLoading = true;
-          setTimeout(() => {
-              this.$router.push({ name: 'subcat-list' });
-          }, 500); 
+      if (this.backLoading) return;
+      this.backLoading = true;
+      setTimeout(() => {
+          this.$router.push({ name: 'subcat-list' });
+      }, 500); 
     },
     discard () {
       this.form={
@@ -567,7 +477,6 @@ export default {
 }
 </script>
 <style scoped>
-/* unchanged styles */
 .uploader-box {
   max-width: 200px;
   max-height: 200px;

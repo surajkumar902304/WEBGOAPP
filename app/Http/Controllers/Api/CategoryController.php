@@ -23,130 +23,114 @@ use Illuminate\Http\Request;
 class CategoryController extends Controller
 {
     public function index(Request $request)
-{
-    /* ---------- 1. setup ---------- */
-    $user       = $request->user();
-    $needle     = mb_strtolower(trim($request->query('search', '')));
-    $brandIds   = $request->query('mbrand_id');
-    $brandIds   = $brandIds ? explode(',', $brandIds) : null;
+    {
 
-    $wishlistVariantIds = $user
-        ? Wishlist::where('user_id', $user->id)->pluck('mvariant_id')->toArray()
-        : [];
+        $user       = $request->user();
+        $needle     = mb_strtolower(trim($request->query('search', '')));
+        $brandIds   = $request->query('mbrand_id');
+        $brandIds   = $brandIds ? explode(',', $brandIds) : null;
 
-    /* ---------- 2. load tree ---------- */
-    $mainCats = MainCategory::with([
-        'categories' => fn ($q) => $q->with([
-            'subcategories' => fn ($q2) =>
-                $q2->whereJsonContains('msubcat_publish', 'Online Store')
+        $wishlistVariantIds = $user
+            ? Wishlist::where('user_id', $user->id)->pluck('mvariant_id')->toArray()
+            : [];
+
+        $mainCats = MainCategory::with([
+            'categories' => fn ($q) => $q->with([
+                'subcategories' => fn ($q2) =>
+                    $q2->whereJsonContains('msubcat_publish', 'Online Store')
+            ])
         ])
-    ])
-    ->orderBy('main_mcat_position')
-    ->get();
+        ->orderBy('main_mcat_position')
+        ->get();
 
-    /* ---------- 3. attach products ---------- */
-    $mainCats->each(fn ($main) =>
-        $main->categories->each(fn ($cat) =>
-            $cat->subcategories->each(fn ($sub) =>
-                $sub->setRelation(
-                    'products',
-                    $this->buildProductsForSub($sub, $brandIds, $wishlistVariantIds)
+        $mainCats->each(fn ($main) =>
+            $main->categories->each(fn ($cat) =>
+                $cat->subcategories->each(fn ($sub) =>
+                    $sub->setRelation(
+                        'products',
+                        $this->buildProductsForSub($sub, $brandIds, $wishlistVariantIds)
+                    )
                 )
             )
-        )
-    );
+        );
 
-    /* ---------- 4. trivial returns ---------- */
-    if ($needle === '' && !$brandIds) {
-        return $this->jsonResponse($mainCats);          // everything
-    }
+        if ($needle === '' && !$brandIds) {
+            return $this->jsonResponse($mainCats);     
+        }
 
-    if ($needle === '' && $brandIds) {                  // brand-only filter
-        $mainCats = $mainCats->map(function ($main) {
-            $cats = $main->categories->map(function ($cat) {
-                $subs = $cat->subcategories
-                              ->filter(fn ($s) => $s->products->isNotEmpty())
-                              ->values();
+        if ($needle === '' && $brandIds) {                 
+            $mainCats = $mainCats->map(function ($main) {
+                $cats = $main->categories->map(function ($cat) {
+                    $subs = $cat->subcategories
+                                ->filter(fn ($s) => $s->products->isNotEmpty())
+                                ->values();
+                    $cat->setRelation('subcategories', $subs);
+                    return $subs->isNotEmpty() ? $cat : null;
+                })->filter()->values();
+
+                $main->setRelation('categories', $cats);
+                return $cats->isNotEmpty() ? $main : null;
+            })->filter()->values();
+
+            return $this->jsonResponse($mainCats);
+        }
+
+        $mainCats = $mainCats->map(function ($main) use ($needle) {
+
+            $mainNameMatches = str_contains(
+                mb_strtolower($main->main_mcat_name),
+                $needle
+            );
+
+            $cats = $main->categories->map(function ($cat) use ($needle, $mainNameMatches) {
+
+                if ($mainNameMatches) {
+                    $subs = $cat->subcategories
+                                ->filter(fn ($s) => $s->products->isNotEmpty())
+                                ->values();
+                    $cat->setRelation('subcategories', $subs);
+                    return $subs->isNotEmpty() ? $cat : null;
+                }
+
+                $subs = $cat->subcategories->map(function ($sub) use ($needle) {
+
+                    if (str_contains(mb_strtolower($sub->msubcat_name), $needle)) {
+                        return $sub->products->isNotEmpty() ? $sub : null;
+                    }
+
+                    $matched = $sub->products->filter(fn ($p) =>
+                        str_contains(mb_strtolower($p['mproduct_title']), $needle)
+                    );
+
+                    if ($matched->isNotEmpty()) {
+                        $sub->setRelation('products', $matched->values());
+                        return $sub;
+                    }
+                    return null;
+                })->filter()->values();
+
+                if (str_contains(mb_strtolower($cat->mcat_name), $needle)) {
+                    $subs = $cat->subcategories
+                                ->filter(fn ($s) => $s->products->isNotEmpty())
+                                ->values();
+                }
+
                 $cat->setRelation('subcategories', $subs);
                 return $subs->isNotEmpty() ? $cat : null;
             })->filter()->values();
 
             $main->setRelation('categories', $cats);
+
             return $cats->isNotEmpty() ? $main : null;
         })->filter()->values();
 
         return $this->jsonResponse($mainCats);
     }
 
-    /* ---------- 5. search (with / without brandIds) ---------- */
-    $mainCats = $mainCats->map(function ($main) use ($needle) {
-
-        /* ── does the MAIN-CATEGORY name itself match? ── */
-        $mainNameMatches = str_contains(
-            mb_strtolower($main->main_mcat_name),
-            $needle
-        );
-
-        /* ── drill into categories either way ── */
-        $cats = $main->categories->map(function ($cat) use ($needle, $mainNameMatches) {
-
-            /* when main-category already matched, we can skip
-               deep name-matching and only keep sub-cats that
-               actually have products                                                    */
-            if ($mainNameMatches) {
-                $subs = $cat->subcategories
-                             ->filter(fn ($s) => $s->products->isNotEmpty())
-                             ->values();
-                $cat->setRelation('subcategories', $subs);
-                return $subs->isNotEmpty() ? $cat : null;
-            }
-
-            /* otherwise fall back to the detailed matching logic */
-            $subs = $cat->subcategories->map(function ($sub) use ($needle) {
-
-                // match sub-cat name
-                if (str_contains(mb_strtolower($sub->msubcat_name), $needle)) {
-                    return $sub->products->isNotEmpty() ? $sub : null;
-                }
-
-                // match individual product titles
-                $matched = $sub->products->filter(fn ($p) =>
-                    str_contains(mb_strtolower($p['mproduct_title']), $needle)
-                );
-
-                if ($matched->isNotEmpty()) {
-                    $sub->setRelation('products', $matched->values());
-                    return $sub;
-                }
-                return null;
-            })->filter()->values();
-
-            // if CATEGORY name matches, keep every sub that still has products
-            if (str_contains(mb_strtolower($cat->mcat_name), $needle)) {
-                $subs = $cat->subcategories
-                             ->filter(fn ($s) => $s->products->isNotEmpty())
-                             ->values();
-            }
-
-            $cat->setRelation('subcategories', $subs);
-            return $subs->isNotEmpty() ? $cat : null;
-        })->filter()->values();
-
-        $main->setRelation('categories', $cats);
-
-        return $cats->isNotEmpty() ? $main : null;
-    })->filter()->values();
-
-    return $this->jsonResponse($mainCats);
-}
-
-
-
     private function buildProductsForSub($sub, ?array $brandIds = null, array $wishlistVariantIds = [])
     {
         $allTags = Mtag::select('mtag_id', 'mtag_name')->get()->keyBy('mtag_id');
 
-        // ───── Load manual products ─────
         $manualProducts = collect();
         if (!empty($sub->product_ids)) {
             $manualQuery = Mproduct::with([
@@ -167,16 +151,13 @@ class CategoryController extends Controller
             $manualProducts = $manualQuery->get();
         }
 
-        // ───── Load smart products ─────
         $smartProducts = collect();
         if ($sub->msubcat_type === 'smart') {
             $smartProducts = $this->getSmartCollectionProducts($sub, $brandIds);
         }
 
-        // Merge both collections
         $products = $manualProducts->merge($smartProducts)->unique('mproduct_id')->sortByDesc('mproduct_id');
 
-        // Load rules (applies only if smart)
         $rules = Mcollection_auto::where('msubcat_id', $sub->msubcat_id)
             ->join('fields', 'fields.field_id', '=', 'mcollection_autos.field_id')
             ->join('queries', 'queries.query_id', '=', 'mcollection_autos.query_id')
@@ -185,7 +166,6 @@ class CategoryController extends Controller
 
         $logic = $sub->logical_operator === 'any' ? 'any' : 'all';
 
-        // ───── Flatten products into variant-wise rows ─────
         $flat = collect();
         foreach ($products as $p) {
             $base = [

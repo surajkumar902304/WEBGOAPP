@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CartitemController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CompanyAddressController;
+use App\Http\Controllers\Api\CouponController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -45,11 +49,13 @@ Route::middleware(['auth.api'])->group(function () {
 
     // Sliders Banner
     Route::get('/round-banner', [BannerController::class, 'roundBanner']);
+    Route::get('/big-banner', [BannerController::class, 'largeBanner']);
+    Route::get('/small-banner', [BannerController::class, 'smallBanner']);
+    Route::get('/browse-banner', [BannerController::class, 'browseBanner']);
 
     // Wishlist
     Route::get  ('/wishlist',      [WishlistController::class, 'index']);
     Route::post ('/wishlist/add',[WishlistController::class, 'store']);
-
 
 });
 

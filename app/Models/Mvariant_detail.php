@@ -17,4 +17,9 @@ class Mvariant_detail extends Model
         'options'=> 'array',
         'option_value'=> 'array',
     ];
+
+    public function variant()
+    {
+        return $this->belongsTo(Mvariant::class, 'mvariant_id', 'mvariant_id');
+    }
 }

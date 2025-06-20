@@ -40,19 +40,15 @@ class Mproduct extends Model
         ->select( 'mvariants.*', 'mvariant_details.options', 'mvariant_details.option_value', 'mstocks.quantity', 'mstocks.mlocation_id');
     }
 
-    public function type()  { return $this->belongsTo(Mproduct_type::class, 'mproduct_type_id'); }
-    public function brand() { return $this->belongsTo(Mbrand::class,        'mbrand_id'); }
-    
-    // public function mproduct_type()
-    // {
-    //     return $this->belongsTo(Mproduct_type::class, 'mproduct_type_id', 'mproduct_type_id')
-    //     ->select(['mproduct_type_id', 'mproduct_type_name']);
-    // }
-
-    // public function mbrand()
-    // {
-    //     return $this->belongsTo(Mbrand::class, 'mbrand_id', 'mbrand_id')
-    //     ->select(['mbrand_id', 'mbrand_name']);
-    // }
+    public function variants()
+    {
+        return $this->hasMany(Mvariant::class, 'mproduct_id', 'mproduct_id');
+    }
+    public function type()  { 
+        return $this->belongsTo(Mproduct_type::class, 'mproduct_type_id'); 
+    }
+    public function brand() { 
+        return $this->belongsTo(Mbrand::class,        'mbrand_id'); 
+    }
 
 }

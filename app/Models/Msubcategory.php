@@ -27,7 +27,6 @@ class Msubcategory extends Model
     
     public function products()
     {
-        // mproduct_id PK है और product_ids कॉलम cast → array
         return $this->hasMany(Mproduct::class, 'mproduct_id', 'product_ids');
     }
 

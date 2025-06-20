@@ -1,6 +1,8 @@
 <template>
     <div>
-        <v-row><h2 class="text-h6">Edit Product</h2></v-row>
+        <v-row>
+            <h2 class="text-h6">Edit Product</h2>
+        </v-row>
         <v-form @submit.prevent="updateProductData" v-model="fvalid">
             <div class="row">
                 <div class="col-md-6">
@@ -31,9 +33,9 @@
                                 </v-col>
                                 <v-col cols="12" md="6">
                                     <v-card class="d-flex align-center justify-center" height="90" outlined @click="triggerFileInput">
-                                    <v-icon v-if="!featuredImage" size="40" color="grey darken-1">mdi-image-area</v-icon>
-                                    <v-img v-else :src="getFeaturedImageSrc" contain height="100%" />
-                                    <v-file-input ref="fileInput" v-model="productImage" accept="image/*" hide-input @change="handleFileUpload" style="display: none" />
+                                        <v-icon v-if="!featuredImage" size="40" color="grey darken-1">mdi-image-area</v-icon>
+                                        <v-img v-else :src="getFeaturedImageSrc" contain height="100%" />
+                                        <v-file-input ref="fileInput" v-model="productImage" accept="image/*" hide-input @change="handleFileUpload" style="display: none" />
                                     </v-card>
                                 </v-col>
                             </v-row>
@@ -82,31 +84,16 @@
                         <v-card-text>
                             <v-row>
                                 <v-col cols="12" md="4">
-                                <label class="font-weight-medium mb-2 d-block">Shipping</label>
-                                <v-row dense>
-                                    <v-col cols="7">
-                                    <v-text-field
-                                        v-model.number="weight"
-                                        type="number"
-                                        dense
-                                        outlined
-                                        label="Weight"
-                                        :rules="weightRules"
-                                    ></v-text-field>
-                                    </v-col>
-                                    <v-col cols="5">
-                                    <v-select
-                                        v-model="weightUnit"
-                                        :items="['kg', 'g']"
-                                        dense
-                                        outlined
-                                        label=""
-                                        hide-details
-                                    ></v-select>
-                                    </v-col>
-                                </v-row>
+                                    <label class="font-weight-medium mb-2 d-block">Shipping</label>
+                                    <v-row dense>
+                                        <v-col cols="7">
+                                            <v-text-field v-model.number="weight" type="number" dense outlined label="Weight" :rules="weightRules"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="5">
+                                            <v-select v-model="weightUnit" :items="['kg', 'g']" dense outlined label="" hide-details></v-select>
+                                        </v-col>
+                                    </v-row>
                                 </v-col>
-
                             </v-row>
                         </v-card-text>
                     </v-card>
@@ -115,37 +102,37 @@
                         <v-card-title>Variants</v-card-title>
                         <v-row v-if="Object.keys(variants).length > 0">
                             <v-col cols="12">
-                            <div v-for="(variantList, key) in variants" :key="key">
-                                <v-sheet class="pa-2 rounded border mb-3" style="background-color: #f9f9f9;">
-                                    <v-row class="align-center">
-                                        <v-col cols="8" class="d-flex flex-wrap align-center gap-2">
-                                            <span class="font-weight-bold mr-2">{{ key }}:</span>
-                                            <v-chip v-for="(opvalue, idx) in variantList" :key="idx" outlined close @click:close="removeValue(key, opvalue)" 
-                                            close-icon="mdi-close-circle" color="primary"><span class="text-capitalize">{{ opvalue }}</span></v-chip>
-                                        </v-col>
-                                        <v-col cols="4" class="d-flex justify-end">
-                                        <v-btn icon color="primary"><v-icon @click="editVariant(key)">mdi-pencil</v-icon></v-btn>
-                                        <v-btn icon color="error"><v-icon @click="removeOption(key)">mdi-delete</v-icon></v-btn>
-                                        </v-col>
-                                    </v-row>
-                                </v-sheet>
-                            </div>
+                                <div v-for="(variantList, key) in variants" :key="key">
+                                    <v-sheet class="pa-2 rounded border mb-3" style="background-color: #f9f9f9;">
+                                        <v-row class="align-center">
+                                            <v-col cols="8" class="d-flex flex-wrap align-center gap-2">
+                                                <span class="font-weight-bold mr-2">{{ key }}:</span>
+                                                <v-chip v-for="(opvalue, idx) in variantList" :key="idx" outlined close @click:close="removeValue(key, opvalue)" 
+                                                    close-icon="mdi-close-circle" color="primary"><span class="text-capitalize">{{ opvalue }}</span></v-chip>
+                                            </v-col>
+                                            <v-col cols="4" class="d-flex justify-end">
+                                                <v-btn icon color="primary"><v-icon @click="editVariant(key)">mdi-pencil</v-icon></v-btn>
+                                                <v-btn icon color="error"><v-icon @click="removeOption(key)">mdi-delete</v-icon></v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-sheet>
+                                </div>
                             </v-col>
                         </v-row>
                         <v-card-text>
                             <v-btn v-if="!showVariantForm && Object.keys(variants).length < 1" color="primary" @click="showVariantForm = true" class="mb-3"><v-icon left>mdi-plus</v-icon> Add Variation</v-btn>
                             <v-btn v-if="Object.keys(variants).length > 0 && Object.keys(variants).length < 3 && !showVariantForm" color="secondary" @click="showVariantForm = true" class="mt-3"><v-icon left>mdi-plus</v-icon>Add Variation</v-btn>
                             <v-row v-if="showVariantForm" class="align-center">
-                            <v-col cols="12" md="4">
-                                <v-select v-model="selectedOption" :items="filteredOptions" item-text="moption_name" item-value="moption_name" label="Option Name" dense outlined hide-details />
-                            </v-col>
-                            <v-col cols="12" md="5">
-                                <v-text-field v-model="optionValues" label="Option Values (comma-separated)" dense outlined hide-details />
-                            </v-col>
-                            <v-col cols="12" md="3">
-                                <v-btn small color="success" @click="saveVariant">{{ isEditingVariant ? "UPDATE" : "DONE" }}</v-btn>
-                                <v-btn icon color="red" @click="removeVariant"><v-icon>mdi-delete</v-icon></v-btn>
-                            </v-col>
+                                <v-col cols="12" md="4">
+                                    <v-select v-model="selectedOption" :items="filteredOptions" item-text="moption_name" item-value="moption_name" label="Option Name" dense outlined hide-details />
+                                </v-col>
+                                <v-col cols="12" md="5">
+                                    <v-text-field v-model="optionValues" label="Option Values (comma-separated)" dense outlined hide-details />
+                                </v-col>
+                                <v-col cols="12" md="3">
+                                    <v-btn small color="success" @click="saveVariant">{{ isEditingVariant ? "UPDATE" : "DONE" }}</v-btn>
+                                    <v-btn icon color="red" @click="removeVariant"><v-icon>mdi-delete</v-icon></v-btn>
+                                </v-col>
                             </v-row>
                         </v-card-text>
                     </v-card>
@@ -189,9 +176,9 @@
                         <v-card-title>Status</v-card-title>
                         <v-card-text>
                             <v-row>
-                            <v-col cols="12">
-                                <v-select v-model="pro.pstatus" :items="['Active','Draft']" dense outlined label="Product Status" />
-                            </v-col>
+                                <v-col cols="12">
+                                    <v-select v-model="pro.pstatus" :items="['Active','Draft']" dense outlined label="Product Status" />
+                                </v-col>
                             </v-row>
                         </v-card-text>
                     </v-card>
@@ -202,8 +189,8 @@
                             <v-row>
                                 <v-col cols="12">
                                     <div class="fw-bold">Sales Channels</div>
-                                    <v-checkbox v-model="pro.selectedSalesChannel" label="Online Store" value="Online Store" />
-                                    <v-checkbox v-model="pro.selectedSalesChannel" label="Other" value="Other" />
+                                        <v-checkbox v-model="pro.selectedSalesChannel" label="Online Store" value="Online Store" />
+                                        <v-checkbox v-model="pro.selectedSalesChannel" label="Other" value="Other" />
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -221,8 +208,8 @@
                                             </v-btn>
                                         </template>
                                     </v-autocomplete>
-                                    <v-autocomplete v-model="pro.brand" :items="mbrands" item-text="mbrand_name" item-value="mbrand_id" label="Brand" 
-                                         outlined dense clearable>
+                                    <v-autocomplete v-model="pro.brand" :items="mbrands" item-text="mbrand_name" item-value="mbrand_id" label="Brand" outlined dense 
+                                        clearable>
                                     </v-autocomplete>
                                     <!-- <v-autocomplete v-model="pro.brand" :items="mbrands" item-text="mbrand_name" item-value="mbrand_id" label="Brand" 
                                         :filter="brandFilter" outlined dense clearable>
@@ -232,8 +219,8 @@
                                             </v-btn>
                                         </template>
                                     </v-autocomplete> -->
-                                    <v-autocomplete ref="tagsAutocomplete" multiple v-model="pro.tags" :items="mtags" item-text="mtag_name" 
-                                        item-value="mtag_id" label="Tags" :filter="tagFilter" outlined dense small-chips deletable-chips>
+                                    <v-autocomplete ref="tagsAutocomplete" multiple v-model="pro.tags" :items="mtags" item-text="mtag_name" item-value="mtag_id" 
+                                        label="Tags" :filter="tagFilter" outlined dense small-chips deletable-chips>
                                         <template v-slot:no-data>
                                             <v-btn @click="addNewTag" :disabled="!typedTag" >
                                                 Add “{{ typedTag }}”
@@ -247,38 +234,39 @@
                 </v-col>
             </v-row>
         </v-form>
+
         <v-dialog v-model="duplicateDialog" max-width="400">
             <v-card>
                 <v-card-title class="text-h6">Confirm Product Duplicate</v-card-title>
                 <v-card-text>Are you sure you want to Duplicate this Product?</v-card-text>
                 <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn text color="grey" @click="duplicateDialog = false">Cancel</v-btn>
-                <v-btn text color="red" @click="performDuplicate">Duplicate</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="grey" @click="duplicateDialog = false">Cancel</v-btn>
+                    <v-btn text color="red" @click="performDuplicate">Duplicate</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
     </div>
-  </template>
+</template>
   
-  <script>
-  import axios from "axios";
+<script>
+import axios from "axios";
   
-    function isSubset(oldVal, newVal) {
-        for (const [k, v] of Object.entries(oldVal)) {
-        if (newVal[k] !== v) return false;
-        }
-        return true;
+function isSubset(oldVal, newVal) {
+    for (const [k, v] of Object.entries(oldVal)) {
+    if (newVal[k] !== v) return false;
     }
+    return true;
+}
     
-    export default {
-        name: "AdminEditProduct",
-        props: {
-            mproid: {
-                type: Number,
-                required: true
-            }
-        },
+export default {
+    name: "AdminEditProduct",
+    props: {
+        mproid: {
+            type: Number,
+            required: true
+        }
+    },
     data() {
         return {
             cdn: "https://cdn.truewebpro.com/",
@@ -362,10 +350,10 @@
         };
     },
     mounted() {
-    this.mproduct_id = this.$route.params?.mproid;
-    this.getProductData();
-  
-  },
+        this.mproduct_id = this.$route.params?.mproid;
+        this.getProductData();
+    
+    },
     computed: {
         filteredOptions() {
             return this.availableOptions.filter(option => {
@@ -863,8 +851,9 @@
             .finally(()=>this.isSubmitting=false)
         }
     }
-  };
-  </script>
+};
+</script>
+
 <style scoped>
 .v-input {
   font-size: 12px !important;

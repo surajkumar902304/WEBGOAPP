@@ -8,12 +8,9 @@ use App\Models\Mcategory;
 use App\Models\Mcollection_auto;
 use App\Models\Mproduct;
 use App\Models\Mtag;
-use App\Models\Field;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Models\Query;
 
 class BannerController extends Controller
 {
@@ -38,13 +35,11 @@ class BannerController extends Controller
                 'browsebanner_image'   => $b->browsebanner_image,
                 'browsebanner_position'=> $b->browsebanner_position,
 
-                /* foreign‑keys */
                 'main_mcat_id'    => $b->main_mcat_id,
                 'mcat_id'    => $b->mcat_id,
                 'msubcat_id' => $b->msubcat_id,
                 'mproduct_id'=> $b->mproduct_id,
 
-                /* human‑readable names */
                 'main_mcat_name'     => optional($b->category)->main_mcat_name,
                 'mcat_name'     => optional($b->category)->mcat_name,
                 'msubcat_name'  => optional($b->subcategory)->msubcat_name,
@@ -78,7 +73,7 @@ class BannerController extends Controller
             'msubcat_id' => 'nullable|exists:msubcategories,msubcat_id',
             'mproduct_id' => 'nullable|exists:mproducts,mproduct_id',
             'browsebanner_name'  => 'required|string|max:50',
-            'browsebanner_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'browsebanner_image' => 'nullable|image|max:2048',
         ]);
 
         $banner_imgpath = null;
@@ -112,7 +107,7 @@ class BannerController extends Controller
             'msubcat_id' => 'nullable|exists:msubcategories,msubcat_id',
             'mproduct_id' => 'nullable|exists:mproducts,mproduct_id',
             'browsebanner_name'  => 'required|string|max:255',
-            'browsebanner_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'browsebanner_image' => 'nullable|image|max:2048',
         ]);
 
         $browsebanner = Browsebanner::find($request->browsebanner_id);
@@ -168,7 +163,6 @@ class BannerController extends Controller
 
     public function index(Request $request)
     {
-        // Load the full structure first
         $mainCategories = MainCategory::with([
             'categories' => function ($q) {
                 $q->select('*')->with([
@@ -177,26 +171,22 @@ class BannerController extends Controller
             }
         ])->get();
 
-        // Attach filtered products to subcategories
         $mainCategories->each(function ($main) {
             $main->categories->each(function ($cat) {
                 $cat->subcategories->each(function ($sub) {
                     $sub->setRelation('products', collect($this->buildProductsForSub($sub)));
                 });
 
-                // Filter out subcategories without products
                 $cat->setRelation('subcategories', $cat->subcategories->filter(
                     fn($sub) => $sub->products->isNotEmpty()
                 )->values());
             });
 
-            // Filter out categories with no subcategories left
             $main->setRelation('categories', $main->categories->filter(
                 fn($cat) => $cat->subcategories->isNotEmpty()
             )->values());
         });
 
-        // Final filter to only keep main categories that still have categories
         $filtered = $mainCategories->filter(
             fn($main) => $main->categories->isNotEmpty()
         )->values();
@@ -338,7 +328,6 @@ class BannerController extends Controller
     /* ------------------------------------------------------------------ */
     private function getSmartCollectionProducts($sub, ?array $brandIds = null)
     {
-        /* COLLECT field→op→value triplets */
         $rules = Mcollection_auto::where('msubcat_id', $sub->msubcat_id)->get();
 
         $logic = $sub->logical_operator === 'any' ? 'orWhere' : 'where';
@@ -350,11 +339,9 @@ class BannerController extends Controller
             $query->whereIn('mbrand_id',$brandIds);
         }
 
-        /* apply only the rules that can be expressed in SQL
-           (Title, Brand, Type, Tag, Price, Inventory stock)            */
         foreach ($rules as $r) {
             $val = $r->value;
-            $field = $r->field_name;       // use the text directly
+            $field = $r->field_name;
 
             switch ($field) {
                 case 'Title':

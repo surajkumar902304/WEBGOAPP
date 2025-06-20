@@ -1,20 +1,22 @@
 <template>
     <div>
       <v-row>
-        <h2 class="text-h6 mb-1">Browse Sliders</h2>
+        <h2 class="text-h6 mb-1">Big Sliders</h2>
       </v-row>
       <v-container fluid>
-        <v-row class="mt-0 g-2 mb-4">
-          <v-col cols="12" md="11" class="p-0">
-            <v-text-field v-model="ssearch" clearable dense hide-details outlined prepend-inner-icon="mdi-magnify mb-2" placeholder="Search name"/>
-          </v-col>
-          <v-col cols="12" md="1" class="text-end p-0 ps-2">
-            <v-btn color="secondary" small class="text-none w-100" style="height: 32px; font-weight: bold; color: #1976d2; background-color: white !important; border: 1px solid #1976d2 !important;" @click="openDialog">
-              Add Slider
-            </v-btn>
-          </v-col>
+        <v-row class="mt-0 pt-0 mb-3 large-search">
+            <v-col cols="12" md="11" class="p-0">
+                <v-text-field v-model="ssearch" clearable dense hide-details outlined prepend-inner-icon="mdi-magnify mb-2" placeholder="Search name"/>
+            </v-col>
+            <v-col cols="12" md="1" class="text-end p-0 ps-2">
+                <v-btn color="secondary" small class="text-none w-100" style="height: 32px; font-weight: bold; color: #1976d2; background-color: white !important; 
+                  border: 1px solid #1976d2 !important;" @click="openDialog">
+                    Add Slider
+                </v-btn>
+            </v-col>
         </v-row>
       </v-container>
+      
       <v-row>
         <v-col cols="12" class="pt-0">
           <v-card outlined>
@@ -28,25 +30,23 @@
                   <th style="width:20%; text-align: center;">Position Drag</th> 
                 </tr>
               </thead>
-              <draggable tag="tbody" :list="browsebanners" handle=".drag-handle" @end="onDragEnd">
-                <tr v-for="item in filteredBanners" :key="item.browsebanner_id">
+              <draggable tag="tbody" :list="largebanners" handle=".drag-handle" @end="onDragEnd">
+                <tr v-for="item in filteredBanners" :key="item.home_large_banner_id">
                   <td class="p-2">
-                    <img :src="cdn + item.browsebanner_image || 'https://via.placeholder.com/50'" width="100" height="75" />
+                    <img :src="cdn + item.home_large_banner_image || 'https://via.placeholder.com/50'" width="100" height="75" />
                   </td>
                   <td class="align-middle">
-                    {{ item.browsebanner_name }}
+                    {{ item.home_large_banner_name }}
                   </td>
                   <td style="text-align: center;">
-                      <v-chip color="primary" class="white--text" outlined pill small @click="editItem(item)" style="cursor: pointer;">
-                          <v-icon small left>mdi-pencil</v-icon>
-                          Edit
-                      </v-chip>
+                    <v-chip color="primary" class="white--text" outlined pill small @click="editItem(item)" style="cursor: pointer;">
+                        <v-icon small left>mdi-pencil</v-icon>Edit
+                    </v-chip>
                   </td>
                   <td style="text-align: center;">
-                      <v-chip color="red" class="white--text" outlined pill small @click="confirmDelete(item)" style="cursor: pointer;">
-                          <v-icon small left>mdi-delete</v-icon>
-                          Delete
-                      </v-chip>
+                    <v-chip color="red" class="white--text" outlined pill small @click="confirmDelete(item)" style="cursor: pointer;">
+                        <v-icon small left>mdi-delete</v-icon>Delete
+                    </v-chip>
                   </td>
                   <td class="text-center drag-handle" style="cursor: grab">
                     <v-icon small>mdi-drag</v-icon>
@@ -68,10 +68,10 @@
           <v-form v-model="fsvalid" @submit.prevent="saveBanner">
             <v-card-text>
               <v-select dense outlined v-model="defaultItem.main_mcat_id" :items="mainCats" item-value="main_mcat_id" item-text="main_mcat_name" label="Main Category" clearable/>
-              <v-select dense outlined v-if="categories.length" v-model="defaultItem.mcat_id" :items="categories" item-value="mcat_id" item-text="mcat_name" label="Category"  clearable/> 
-              <v-select dense outlined class="mt-3" v-if="subcategories.length" v-model="defaultItem.msubcat_id" :items="subcategories" item-value="msubcat_id" item-text="msubcat_name" label="Sub‑Category"  clearable/>              
+              <v-select dense outlined v-if="categories.length" v-model="defaultItem.mcat_id" :items="categories" item-value="mcat_id" item-text="mcat_name" label="Category" clearable/> 
+              <v-select dense outlined class="mt-3" v-if="subcategories.length" v-model="defaultItem.msubcat_id" :items="subcategories" item-value="msubcat_id" item-text="msubcat_name" label="Sub‑Category" clearable/>              
               <v-select dense outlined class="mt-3" v-if="products.length" v-model="defaultItem.mproduct_id" :items="products" item-value="mproduct_id" item-text="mproduct_title" label="Product"  clearable/>
-              <v-text-field v-model="defaultItem.browsebanner_name" :rules="bannernameRule" label="Slider Name"/>
+              <v-text-field v-model="defaultItem.home_large_banner_name" :rules="bannernameRule" label="Slider Name"/>
               <div class="d-flex flex-column align-center">
                 <v-card-actions class="pb-0 pt-0">
                   <span class="body-2 fw-semibold">
@@ -99,17 +99,17 @@
 
       <!-- Delete dialog -->
       <v-dialog v-model="deleteDialog" max-width="400">
-          <v-card>
-              <v-card-title class="text-h6">Confirm Delete</v-card-title>
-              <v-card-text>Are you sure you want to delete this Slider?</v-card-text>
-              <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="grey" @click="deleteDialog = false">Cancel</v-btn>
-                  <v-btn text color="red" :loading="deleteLoading" :disabled="deleteLoading" @click="performDelete">Delete</v-btn>
-              </v-card-actions>
-          </v-card>
+        <v-card>
+            <v-card-title class="text-h6">Confirm Delete</v-card-title>
+            <v-card-text>Are you sure you want to delete this Slider?</v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn text color="grey" @click="deleteDialog = false">Cancel</v-btn>
+                <v-btn text color="red" :loading="deleteLoading" :disabled="deleteLoading" @click="performDelete">Delete</v-btn>
+            </v-card-actions>
+        </v-card>
       </v-dialog>
-  </div>
+    </div>
 </template>
   
 <script>
@@ -117,14 +117,14 @@ import axios      from 'axios'
 import draggable  from 'vuedraggable'
 
 export default {
-  name       : 'BrowseBanner',
+  name       : 'HomeLargeBanner',
   components : { draggable },
 
   data () {
     return {
       cdn            : 'https://cdn.truewebpro.com/',
       ssearch        : '',
-      browsebanners  : [],          
+      largebanners  : [],          
 
       mainCats       : [],           
       categories     : [],           
@@ -137,9 +137,9 @@ export default {
       submitting     : false,
       fillLock       : false,       
       defaultItem    : {
-        browsebanner_id   : null,
-        browsebanner_name : '',
-        browsebanner_image: '',
+        home_large_banner_id   : null,
+        home_large_banner_name : '',
+        home_large_banner_image: '',
         main_mcat_id      : null,
         mcat_id           : null,
         msubcat_id        : null,
@@ -159,11 +159,9 @@ export default {
       deleteLoading       : false
     }
   },
-
   async created () {
     await Promise.all([ this.loadMainCats(), this.loadBanners() ])
   },
-
   watch : {
     'defaultItem.main_mcat_id' (val) {
       if (this.fillLock) return
@@ -202,8 +200,8 @@ export default {
 
     filteredBanners () {
       const term = (this.ssearch || '').toLowerCase()
-      return this.browsebanners.filter(b =>
-        (b.browsebanner_name || '').toLowerCase().includes(term)
+      return this.largebanners.filter(b =>
+        (b.home_large_banner_name || '').toLowerCase().includes(term)
       )
     }
   },
@@ -213,22 +211,18 @@ export default {
       const { data } = await axios.get('/admin/main/categories')
       this.mainCats = data.categories
     },
-
     async loadBanners () {
-      const { data } = await axios.get('/admin/browsebanners/vlist')
-      this.browsebanners = data.browsebanner
+      const { data } = await axios.get('/admin/large-banners/vlist')
+      this.largebanners = data.home_large_banner
     },
-
     ensureCats () {
       return this.mainCats.length ? Promise.resolve() : this.loadMainCats()
     },
-
     openDialog () {
       this.resetForm()
       this.imagePreview = 'https://via.placeholder.com/150'
       this.addSdialog   = true
     },
-
     async editItem (item) {
       await this.ensureCats()
 
@@ -242,9 +236,9 @@ export default {
       this.products      = sub.products       || []
 
       this.defaultItem = {
-        browsebanner_id   : item.browsebanner_id,
-        browsebanner_name : item.browsebanner_name,
-        browsebanner_image: '',
+        home_large_banner_id   : item.home_large_banner_id,
+        home_large_banner_name : item.home_large_banner_name,
+        home_large_banner_image: '',
         main_mcat_id      : item.main_mcat_id,
         mcat_id           : item.mcat_id,
         msubcat_id        : item.msubcat_id,
@@ -252,19 +246,19 @@ export default {
       }
       this.$nextTick(() => (this.fillLock = false))
 
-      this.imagePreview = this.cdn + item.browsebanner_image
-      this.imageName    = item.browsebanner_image.split('/').pop()
-      this.editedIndex  = item.browsebanner_id
+      this.imagePreview = this.cdn + item.home_large_banner_image
+      this.imageName    = item.home_large_banner_image.split('/').pop()
+      this.editedIndex  = item.home_large_banner_id
       this.fsvalid      = true
       this.addSdialog   = true
     },
-
-    triggerFileInput () { this.$refs.imageInput.click() },
-
+    triggerFileInput () { 
+      this.$refs.imageInput.click() 
+    },
     handleImageUpload (e) {
       const file = e.target.files[0]
       if (!file) return
-      this.defaultItem.browsebanner_image = file
+      this.defaultItem.home_large_banner_image = file
       this.imagePreview = URL.createObjectURL(file)
       this.imageName    = file.name
     },
@@ -276,15 +270,15 @@ export default {
       ;['main_mcat_id','mcat_id','msubcat_id','mproduct_id']
         .forEach(k => this.defaultItem[k]!=null && fd.append(k,this.defaultItem[k]))
 
-      fd.append('browsebanner_name', this.defaultItem.browsebanner_name)
-      if (this.defaultItem.browsebanner_image instanceof File)
-        fd.append('browsebanner_image', this.defaultItem.browsebanner_image)
+      fd.append('home_large_banner_name', this.defaultItem.home_large_banner_name)
+      if (this.defaultItem.home_large_banner_image instanceof File)
+        fd.append('home_large_banner_image', this.defaultItem.home_large_banner_image)
       if (this.editedIndex !== -1)
-        fd.append('browsebanner_id', this.editedIndex)
+        fd.append('home_large_banner_id', this.editedIndex)
 
       const isNew = this.editedIndex === -1
-      const url   = isNew ? '/admin/browsebanners/add'
-                          : '/admin/browsebanners/update'
+      const url   = isNew ? '/admin/large-banners/add'
+                          : '/admin/large-banners/update'
 
       try {
         await axios.post(url, fd, { headers:{'Content-Type':'multipart/form-data'} })
@@ -301,11 +295,10 @@ export default {
         this.submitting = false
       }
     },
-
     async onDragEnd () {
-      const payload = this.browsebanners.map((it,i)=>({id:it.browsebanner_id,position:i+1}))
+      const payload = this.largebanners.map((it,i)=>({id:it.home_large_banner_id,position:i+1}))
       try {
-        await axios.post('/admin/browsebanners/reorder', payload)
+        await axios.post('/admin/large-banners/reorder', payload)
         this.$toast.success('Order saved', {
                         timeout: 500
                     })
@@ -315,18 +308,16 @@ export default {
                     })
       }
     },
-
     confirmDelete (item) {
       this.browseBannerToDelete = item
       this.deleteDialog = true
     },
-
     async performDelete () {
       if (!this.browseBannerToDelete) return
       this.deleteLoading = true
       try {
-        await axios.post('/admin/browsebanner-delete',
-                         {browsebanner_id:this.browseBannerToDelete.browsebanner_id})
+        await axios.post('/admin/large-banners-delete',
+                         {home_large_banner_id:this.browseBannerToDelete.home_large_banner_id})
         this.$toast.success('Banner deleted', {
                         timeout: 500
                     })
@@ -341,12 +332,11 @@ export default {
         this.browseBannerToDelete = null
       }
     },
-
     resetForm () {
       this.defaultItem = {
-        browsebanner_id   : null,
-        browsebanner_name : '',
-        browsebanner_image: '',
+        home_large_banner_id   : null,
+        home_large_banner_name : '',
+        home_large_banner_image: '',
         main_mcat_id      : null,
         mcat_id           : null,
         msubcat_id        : null,
@@ -366,18 +356,28 @@ export default {
 
 <style scoped>
 .uploader-box {
-  max-width: 200px;
-  max-height: 200px;
-  border: 1px dashed #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+    max-width: 200px;
+    max-height: 200px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 .v-input {
   font-size: 12px !important;
+}
+.large-search .col-md-10 {
+    width: calc(100% - 140px)!important;
+    flex: 0 0 calc(100% - 140px)!important;
+    max-width: calc(100% - 140px)!important;
+}
+.large-search .col-md-2 {
+    width: 140px!important;
+    flex: 0 0 140px!important;
+    max-width: 140px!important;
 }
 </style>
   

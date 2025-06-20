@@ -71,16 +71,16 @@ class AdminController extends Controller
     public function updateUserApproval(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'admin_approval' => 'required|in:Pending,Approved,Declined',
+            'user_ids' => 'required|array',
+            'bulkstatus' => 'required|in:Pending,Approved,Declined',
         ]);
 
-        $user = User::find($request->user_id);
-        $user->admin_approval = $request->admin_approval;
-        $user->save();
+        User::whereIn('id', $request->user_ids)
+            ->update(['admin_approval' => $request->bulkstatus]);
 
         return response()->json(['success' => true]);
     }
+
 
     // product
     public function productsList()
@@ -242,6 +242,22 @@ class AdminController extends Controller
         }
     }
 
+    public function bulkDeleteMbrand(Request $request)
+    {
+        $data = $request->validate([
+            'mbrand_ids'   => 'required|array',
+            'mbrand_ids.*' => 'integer|exists:mbrands,mbrand_id',
+        ]);
+
+        DB::transaction(function () use ($data) {
+            Mbrand::whereIn('mbrand_id', $data['mbrand_ids'])->delete();
+
+        });
+
+        return response()->json(['status' => true]);
+    }
+
+
     // Tags
     public function mtagVlist()
     {
@@ -332,6 +348,45 @@ class AdminController extends Controller
         return response()->json(['status' => true, 'message' => 'Offer deleted']);
     }
 
+
+    public function bulkDeleteProductoffer(Request $request)
+    {
+        $request->validate([
+            'product_offer_ids' => 'required|array',
+        ]);
+        
+        Product_Offer::whereIn('product_offer_id', $request->product_offer_ids)->delete();
+
+        return response()->json(['status' => true, 'message' => 'Offer deleted']);
+    }
+
+    public function bulkAddProductoffer(Request $request)
+    {
+        $request->validate([
+            'product_offer_ids' => 'required|array',
+            'bulk_product_tag' => 'nullable',
+        ]);
+
+        Product_Offer::whereIn('product_offer_id', $request->product_offer_ids)
+        ->update(['product_deal_tag' => $request->bulk_product_tag]);
+    
+        return response()->json(['status' => true, 'message' => 'Offer deleted']);
+    }
+
+    public function bulkRemoveProductoffer(Request $request)
+    {
+        $request->validate([
+            'product_offer_ids' => 'required|array',
+            'bulk_product_tag' => 'nullable',
+        ]);
+    
+        Product_Offer::whereIn('product_offer_id', $request->product_offer_ids)
+        ->update(['product_deal_tag' => $request->bulk_product_tag]);
+    
+        return response()->json(['status' => true, 'message' => 'Offer deleted']);
+    }
+
+    // admin product list
     public function adminProductlist()
     {
         $mproducts = Mproduct::with('mvariants')
@@ -847,7 +902,6 @@ class AdminController extends Controller
                 'isvalidatedetails' => $variant->isvalidatedetails,
             ]);
 
-            // Copy variant detail
             $detail = optional($variant->mvariantDetail);
             Mvariant_detail::create([
                 'mvariant_id'  => $newVariant->mvariant_id,
@@ -855,7 +909,6 @@ class AdminController extends Controller
                 'option_value' => $detail->option_value ?? [],
             ]);
 
-            // Copy stock
             $stockQty = optional($variant->mstock->first())->quantity ?? 0;
             $mlocation = Mlocation::firstOrCreate(
                 ['name' => 'default', 'is_default' => true],
@@ -932,12 +985,10 @@ class AdminController extends Controller
         foreach ($req->product_ids as $id) {
             $product = Mproduct::find($id);
             if ($product) {
-                // Properly get array from existing field
                 $existing = is_array($product->mtags)
                     ? $product->mtags
                     : json_decode($product->mtags, true) ?? [];
 
-                // Merge and clean up tag_ids
                 $merged = array_unique(array_merge($existing, $req->tag_ids));
                 $product->mtags = array_values(array_map('intval', $merged));
                 $product->save();

@@ -16,7 +16,6 @@ class CheckJwtToken
     public function handle(Request $request, Closure $next)
     {
         try {
-            // Validate the JWT from the Authorization header
             $user = JWTAuth::parseToken()->authenticate();
 
             if (! $user) {
@@ -25,13 +24,11 @@ class CheckJwtToken
                 ], Response::HTTP_UNAUTHORIZED);
             }
         } catch (JWTException $e) {
-            // If token is missing, expired, or invalid
             return response()->json([
                 'message' => 'Token error: ' . $e->getMessage()
             ], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Token is valid; proceed
         return $next($request);
     }
 }

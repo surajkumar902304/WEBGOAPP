@@ -25,7 +25,6 @@
     },
     "dependencies": {
         "@mdi/font": "^7.4.47",
-        "chart.js": "^4.4.9",
         "sortablejs": "^1.15.6",
         "vue-router": "^3.6.5",
         "vue-toastification": "^1.7.14",

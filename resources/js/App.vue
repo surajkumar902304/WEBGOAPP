@@ -36,12 +36,6 @@
             <v-list-item-title>Products</v-list-item-title>
           </router-link>
 
-          <!-- Inventory -->
-          <router-link tag="v-list-item" to="#">
-            <v-list-item-icon><v-icon>mdi-warehouse</v-icon></v-list-item-icon>
-            <v-list-item-title>Inventory</v-list-item-title>
-          </router-link>
-
           <!-- Customers -->
           <router-link tag="v-list-item" to="/admin/customers" active-class="active-link">
             <v-list-item-icon><v-icon>mdi-account-group-outline</v-icon></v-list-item-icon>
@@ -91,17 +85,17 @@
               <v-list-item-title>Theme Setting</v-list-item-title>
             </template>
 
-            <router-link tag="v-list-item" to="#">
+            <router-link tag="v-list-item" to="/admin/round-sliders" active-class="active-link">
               <v-list-item-icon><v-icon>mdi-circle-slice-8</v-icon></v-list-item-icon>
               <v-list-item-title>Round Banners</v-list-item-title>
             </router-link>
 
-            <router-link tag="v-list-item" to="#">
+            <router-link tag="v-list-item" to="/admin/big-sliders" active-class="active-link">
               <v-list-item-icon><v-icon>mdi-view-carousel</v-icon></v-list-item-icon>
               <v-list-item-title>Big Sliders</v-list-item-title>
             </router-link>
 
-            <router-link tag="v-list-item" to="#">
+            <router-link tag="v-list-item" to="/admin/small-sliders" active-class="active-link">
               <v-list-item-icon><v-icon>mdi-view-parallel</v-icon></v-list-item-icon>
               <v-list-item-title>Small Sliders</v-list-item-title>
             </router-link>
@@ -120,7 +114,6 @@
               <v-list-item-icon><v-icon>mdi-star-check-outline</v-icon></v-list-item-icon>
               <v-list-item-title>Browse Sliders</v-list-item-title>
             </router-link>
-
           </v-list-group>
 
           <v-list-group prepend-icon="mdi-store-cog-outline" :value="isShopGroupOpen" no-action>
@@ -145,6 +138,7 @@
 
           </v-list-group>
 
+          <!-- Logout (still handled by Laravel) -->
           <v-list-item :href="'/admin/logout'" active-class="active-link">
             <v-list-item-icon><v-icon>mdi-logout</v-icon></v-list-item-icon>
             <v-list-item-title>Log Out</v-list-item-title>
@@ -186,7 +180,6 @@ export default {
           || this.$route.path.startsWith('#')
     }
   }
-
 }
 </script>
 

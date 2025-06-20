@@ -36,7 +36,6 @@ class AuthController extends Controller
         } catch (ValidationException $e) {
             $errors = $e->validator->errors();
 
-            // Custom message if email already taken
             if ($errors->has('email')) {
                 return response()->json([
                     'status'  => false,
@@ -44,7 +43,6 @@ class AuthController extends Controller
                 ], 422);
             }
 
-            // For other validation errors
             return response()->json([
                 'status' => false,
                 'message' => $errors->first(),
@@ -163,4 +161,5 @@ class AuthController extends Controller
             'user'   => Auth::guard('api')->user(),
         ]);
     }
+
 }

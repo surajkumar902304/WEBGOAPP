@@ -17,6 +17,9 @@ import Mcatlist from './admin/category/Mcatlist.vue';
 import Msubcatlist from './admin/category/Msubcatlist.vue';
 import AddSubCategory from './admin/category/AddSubCategory.vue';
 import EditSubCategory from './admin/category/EditSubCategory.vue';
+import HomeRoundBanner from './admin/banner/HomeRoundBanner.vue';
+import HomeLargeBanner from './admin/banner/HomeLargeBanner.vue';
+import HomeSmallBanner from './admin/banner/HomeSmallBanner.vue';
 import BrowseBanner from './admin/banner/BrowseBanner.vue';
 
 
@@ -34,9 +37,11 @@ const routes = [
   { path: '/admin/sub-categories/list', component: Msubcatlist, name: 'subcat-list' },
   { path: '/admin/sub-categories/addview', component: AddSubCategory, name: 'add-subcat' },
   { path: '/admin/sub-categories/:msubcatid', component: EditSubCategory, name: 'edit-subcat' },
+  { path: '/admin/round-sliders', component: HomeRoundBanner, name: 'round-sliders-list' },
+  { path: '/admin/big-sliders', component: HomeLargeBanner, name: 'big-sliders-list' },
+  { path: '/admin/small-sliders', component: HomeSmallBanner, name: 'small-sliders-list' },
   { path: '/admin/browse-sliders', component: BrowseBanner, name: 'browse-sliders-list' },
 
-  // Add more as needed
 ];
 
 export default new VueRouter({

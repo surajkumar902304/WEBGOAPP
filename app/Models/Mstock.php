@@ -18,4 +18,9 @@ class Mstock extends Model
         return $this->belongsTo(Mlocation::class, 'mlocation_id', 'mlocation_id')
         ->select(['mlocation_id', 'name', 'adresss', 'is_default']);
     }
+
+    public function variant()
+    {
+        return $this->belongsTo(Mvariant::class, 'mvariant_id', 'mvariant_id');
+    }
 }

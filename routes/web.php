@@ -1,11 +1,11 @@
 <?php
 
+use App\Http\Controllers\HomebannerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\McategoryController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\HomebannerController;
 
 // Auth
 Auth::routes();
@@ -24,7 +24,7 @@ Route::prefix('admin')->middleware('admin.guest')->group(function () {
 // Admin Protected API Routes
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
 
-    // admin Logout
+    // Admin Logout
     Route::get('/logout', [AdminController::class, 'adminlogout'])->name('admin.logout');
 
     // Customers User routes
@@ -42,6 +42,7 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::post('/mbrands/add', [AdminController::class, 'addBrand'])->name('mbrand.add');
     Route::post('/mbrands/update', [AdminController::class, 'editBrand'])->name('mbrand.edit');
     Route::post('/mbrand-delete', [AdminController::class, 'deleteBrand']);
+    Route::post('/mbrands/bulk-delete', [AdminController::class, 'bulkDeleteMbrand']);
 
     // Tags routes
     Route::get('/mtags/vlist', [AdminController::class, 'mtagVlist'])->name('mtags.vlist');
@@ -71,6 +72,9 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::post('/product-offers/add', [AdminController::class, 'addProductoffer'])->name('productoffer.add');
     Route::post('/product-offers/update', [AdminController::class, 'editProductoffer'])->name('productoffer.edit');
     Route::post('/product-offers/delete', [AdminController::class, 'deleteProductoffer'])->name('productoffer.delete');
+    Route::post('/product-offers/bulk-delete', [AdminController::class, 'bulkDeleteProductoffer']);
+    Route::post('/product-offers/bulk-add', [AdminController::class, 'bulkAddProductoffer']);
+    Route::post('/product-offers/bulk-remove', [AdminController::class, 'bulkRemoveProductoffer']);
 
     // Main Categories routes
     Route::get('/main-mcategories/vlist', [McategoryController::class, 'mainMcatVlist'])->name('mainmcats.vlist');
@@ -106,12 +110,30 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::post('/browsebanners/reorder', [BannerController::class, 'reorder']);
     Route::post('/browsebanner-delete', [BannerController::class, 'deleteBrowseBanner'])->name('browsebanner.delete');
 
-    // Main Category api categories->sub-categories->products
+    // Home Round sliders routes
+    Route::get('/round-banners/vlist',[HomebannerController::class,'roundBannerVlist'])->name('roundbanners.vlist');
+    Route::post('/round-banners/add',[HomebannerController::class,'addRoundBanner'])->name('roundbanners.add');
+    Route::post('/round-banners/update',[HomebannerController::class,'editRoundBanner'])->name('roundbanner.edit');
+    Route::post('/round-banners/reorder', [HomebannerController::class, 'roundreorder']);
+    Route::post('/round-banners-delete', [HomebannerController::class, 'deleteRoundBanner'])->name('roundbanner.delete');
+
+    // Home Large sliders routes
+    Route::get('/large-banners/vlist',[HomebannerController::class,'largeBannerVlist'])->name('largebanners.vlist');
+    Route::post('/large-banners/add',[HomebannerController::class,'addLargeBanner'])->name('largebanner.add');
+    Route::post('/large-banners/update',[HomebannerController::class,'editLargeBanner'])->name('largebanner.edit');
+    Route::post('/large-banners/reorder', [HomebannerController::class, 'largereorder']);
+    Route::post('/large-banners-delete', [HomebannerController::class, 'deleteLargeBanner'])->name('largebanner.delete');
+
+    // Home Small sliders routes
+    Route::get('/small-banners/vlist',[HomebannerController::class,'smallBannerVlist'])->name('smallbanners.vlist');
+    Route::post('/small-banners/add',[HomebannerController::class,'addSmallBanner'])->name('smallbanner.add');
+    Route::post('/small-banners/update',[HomebannerController::class,'editSmallBanner'])->name('smallbanner.edit');
+    Route::post('/small-banners/reorder', [HomebannerController::class, 'smallreorder']);
+    Route::post('/small-banners-delete', [HomebannerController::class, 'deleteSmallBanner'])->name('smallbanner.delete');
+ 
+    // Main Category api main category->categories->sub-categories->products
     Route::get('/main/categories', [BannerController::class, 'index']);
 });
-
-
-        
 
 
 // Home Routes
@@ -121,12 +143,10 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::post('/logout', [HomeController::class, 'logout'])->name('logout');
 
 
-// Vue SPA Catch-All Route for admin
 Route::get('/admin/{any}', function () {
-    return view('spa'); // This blade contains your Vue <div id="app">
+    return view('spa'); 
 })->where('any', '.*')->middleware('admin.auth');
 
-// Vue SPA Catch-All for front pages if needed
 Route::get('/{any}', function () {
     return view('spa');
 })->where('any', '^(?!admin).*$');

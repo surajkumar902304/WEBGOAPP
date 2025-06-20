@@ -29,7 +29,6 @@ class BrandController extends Controller
             ], 422);
         }
         
-        
         $items = Wishlist::where('user_id', $data['user_id'])->pluck('mvariant_id');
 
         $brands = Mbrand::whereIn('mbrand_id', function ($query) use ($items) {
